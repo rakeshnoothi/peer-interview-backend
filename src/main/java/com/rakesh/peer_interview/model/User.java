@@ -1,5 +1,11 @@
 package com.rakesh.peer_interview.model;
 
+import java.util.Collection;
+import java.util.List;
+
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -9,13 +15,15 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "users")
-public class MyUser {
+public class User implements UserDetails {
 	
-    @Id
+	private static final long serialVersionUID = 1L;
+
+	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id")
     private Long id;
-
+	
 	@Column(name = "username", unique = true, length = 200)
     private String username;
 
@@ -25,9 +33,10 @@ public class MyUser {
     @Column(name = "enabled")
     private Boolean enabled;
     
-	public MyUser() {}
+    
+	public User() {}
 
-	public MyUser(Long id, String username, String password, Boolean enabled) {
+	public User(Long id, String username, String password, Boolean enabled) {
 		this.id = id;
 		this.username = username;
 		this.password = password;
@@ -42,18 +51,10 @@ public class MyUser {
 		this.id = id;
 	}
 
-	public String getUsername() {
-		return username;
-	}
-
 	public void setUsername(String username) {
 		this.username = username;
 	}
-
-	public String getPassword() {
-		return password;
-	}
-
+	
 	public void setPassword(String password) {
 		this.password = password;
 	}
@@ -65,11 +66,40 @@ public class MyUser {
 	public void setEnabled(Boolean enabled) {
 		this.enabled = enabled;
 	}
+	
+	@Override
+	public String getUsername() {
+		return username;
+	}
+	
+	@Override
+	public String getPassword() {
+		return password;
+	}
+	
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
 
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }
+
+	@Override
+	public Collection<? extends GrantedAuthority> getAuthorities() {
+		return List.of();
+	}
+	
 	@Override
 	public String toString() {
 		return "User [username=" + username + ", password=" + password + ", enabled=" + enabled + "]";
 	}
-	
 
 }

@@ -1,13 +1,13 @@
-package com.rakesh.peer_interview.dto;
+package com.rakesh.peer_interview.security.dto;
 
-public class RegisterUserDTO {
+public class RegisterUserRequestDTO {
 	private String username;
 	private String password;
 	private Boolean enabled;
 	
-	public RegisterUserDTO() {}
+	public RegisterUserRequestDTO() {}
 
-	public RegisterUserDTO(String username, String password, Boolean enabled) {
+	public RegisterUserRequestDTO(String username, String password, Boolean enabled) {
 		this.username = username;
 		this.password = password;
 		this.enabled = enabled;
@@ -28,7 +28,7 @@ public class RegisterUserDTO {
 	public void setPassword(String password) {
 		this.password = password;
 	}
-	
+
 	public Boolean getEnabled() {
 		return enabled;
 	}
@@ -36,13 +36,6 @@ public class RegisterUserDTO {
 	public void setEnabled(Boolean enabled) {
 		this.enabled = enabled;
 	}
-
-	@Override
-	public String toString() {
-		return "RegisterUserDTO [username=" + username + ", password=" + password+ ", enabled=" + enabled + "]";
-	}
-
-	
 	
 	
 }

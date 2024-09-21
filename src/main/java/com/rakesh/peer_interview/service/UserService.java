@@ -4,10 +4,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.rakesh.peer_interview.dto.LoginResponseDTO;
-import com.rakesh.peer_interview.dto.RegisterUserDTO;
-import com.rakesh.peer_interview.model.MyUser;
+import com.rakesh.peer_interview.model.User;
 import com.rakesh.peer_interview.repository.UserRepository;
+import com.rakesh.peer_interview.security.dto.RegisterUserRequestDTO;
+import com.rakesh.peer_interview.security.dto.RegisterUserResponseDTO;
 
 @Service
 public class UserService {
@@ -17,16 +17,17 @@ public class UserService {
 	
 	private static final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 	
-	public LoginResponseDTO create(RegisterUserDTO registerUserDTO) {
-		MyUser user = new MyUser();
+	public RegisterUserResponseDTO create(RegisterUserRequestDTO registerUserRequestDTO) {
+		User user = new User();
 		
-		System.out.println(registerUserDTO);
-		user.setUsername(registerUserDTO.getUsername());
-		user.setPassword(encoder.encode(registerUserDTO.getPassword()));
-		user.setEnabled(registerUserDTO.getEnabled());
+		System.out.println(registerUserRequestDTO);
+		user.setUsername(registerUserRequestDTO.getUsername());
+		user.setPassword(encoder.encode(registerUserRequestDTO.getPassword()));
+		user.setEnabled(registerUserRequestDTO.getEnabled());
+		System.out.println("NEW USER: " + user);
 		
 		this.repository.save(user);
 		
-		return new LoginResponseDTO(user.getUsername());
+		return new RegisterUserResponseDTO(user.getUsername());
 	}
 }
