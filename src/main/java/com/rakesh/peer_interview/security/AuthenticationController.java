@@ -1,5 +1,7 @@
 package com.rakesh.peer_interview.security;
 
+import java.util.Date;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -7,7 +9,6 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,7 +19,6 @@ import com.rakesh.peer_interview.security.dto.LoginRequestDTO;
 import com.rakesh.peer_interview.security.dto.LoginResponseDTO;
 import com.rakesh.peer_interview.security.dto.RegisterUserRequestDTO;
 import com.rakesh.peer_interview.security.dto.RegisterUserResponseDTO;
-import com.rakesh.peer_interview.service.UserService;
 
 @RestController
 @RequestMapping("/api/v1/auth")
@@ -33,7 +33,7 @@ public class AuthenticationController {
 	@Autowired
 	private AuthenticationManager authenticationManager;
 	
-	@PostMapping("signup")
+	@PostMapping("/signup")
 	public ResponseEntity<RegisterUserResponseDTO> createUser(@RequestBody RegisterUserRequestDTO registerUserRequestDTO) {
 		return new ResponseEntity<RegisterUserResponseDTO>(this.userService.create(registerUserRequestDTO), HttpStatus.CREATED);
     }
@@ -46,7 +46,9 @@ public class AuthenticationController {
 		
 		LoginResponseDTO loginResponse = new LoginResponseDTO();
 		loginResponse.setToken(jwtToken);
-		loginResponse.setExpiresIn(jwtService.getExpiresInMs());
+		loginResponse.setTokenType("Bearer");
+		loginResponse.setExpiresMs(jwtService.getExpiresInMs());
+		loginResponse.setIssuedAt(new Date());
 		
 		return new ResponseEntity<LoginResponseDTO>(loginResponse, HttpStatus.OK);
 	}
@@ -61,10 +63,5 @@ public class AuthenticationController {
 		}catch(BadCredentialsException e) {
 			throw new BadCredentialsException("Invalid username or password!!");
 		}
-	}
-	
-	@ExceptionHandler(BadCredentialsException.class)
-	public ResponseEntity<String> handleBadCredentialsException(BadCredentialsException exception){
-		return new ResponseEntity<String>("provided credentials are invalid", HttpStatus.BAD_REQUEST);
 	}
 }

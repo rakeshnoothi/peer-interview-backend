@@ -16,44 +16,44 @@ import io.jsonwebtoken.security.Keys;
 @Service
 public class JwtService {
 	
-	@Value("${jwt.expiresInMs}")
-	private Long expiersInMs;
+	@Value("${jwt.expiresMs}")
+	private Long expiersMs;
 	
 	@Value("${jwt.secret}")
 	private String SECRET_KEY;
 	
 	public Long getExpiresInMs() {
-		return this.expiersInMs;
+		return this.expiersMs;
 	}
 	
 	public String getUsernameFromToken(String token) {
 		Claims claims = getAllClaimsFromToken(token);
+		System.out.println("All claims recevied");
 		return claims.getSubject();
 	}
 	
-	public Date getExpirationDateFromToken(String token) {
+	private Date getExpirationDateFromToken(String token) {
 		Claims claims = getAllClaimsFromToken(token);
 		return claims.getExpiration();
 	}
 	
-	public boolean isTokenExpired(String token) {
+	private boolean isTokenExpired(String token) {
 		Date expiration = getExpirationDateFromToken(token);
         return expiration.before(new Date());
 	}
 	
 	// get all claims from the token.
 	private Claims getAllClaimsFromToken(String token) {
-		System.out.println("invoked getAllClaimsFromTken()");
-		return Jwts.parser()
-				  .verifyWith(getSignatureKey())
-				  .build()
-				  .parseSignedClaims(token)
-				  .getPayload();
+			return Jwts.parser()
+					.verifyWith(getSignatureKey())
+					.build()
+					.parseSignedClaims(token)
+					.getPayload();
 	}
 	
 	// Build JWT token with claims
 	 public String buildJwtToken(String username) {
-		 Long expirationTime = System.currentTimeMillis() + expiersInMs;
+		 Long expirationTime = System.currentTimeMillis() + expiersMs;
 		 return Jwts.builder()
 				    .issuer("me")
 				    .subject(username)

@@ -1,4 +1,4 @@
-package com.rakesh.peer_interview.service;
+package com.rakesh.peer_interview.security;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
