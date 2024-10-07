@@ -8,13 +8,11 @@ import lombok.ToString;
 
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @ToString
-public class RegisterUserRequestDTO {
+public class UserDTO {
 	private String username;
-	private String password;
-	private Boolean enabled;
 	private String firstName;
-	private String lastName;	
+	private String lastName;
 }

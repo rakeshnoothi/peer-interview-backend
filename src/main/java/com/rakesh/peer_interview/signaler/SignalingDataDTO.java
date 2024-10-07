@@ -8,7 +8,6 @@ public class SignalingDataDTO {
 	    private String to;    
 	    private Map<String, Object> description; 
 	    private Map<String, Object> candidate;
-	    private String role;
 	    
 	    public SignalingDataDTO() {}
 	    
@@ -17,16 +16,15 @@ public class SignalingDataDTO {
 				String from, 
 				String to, 
 				Map<String, Object> description,
-				Map<String, Object> candidate,
-				String role) {
+				Map<String, Object> candidate
+				) {
 			this.type = type;
 			this.from = from;
 			this.to = to;
 			this.description = description;
 			this.candidate = candidate;
-			this.role = role;		}
+			}
 
-		// Getters and Setters
 	    public String getType() {
 	        return type;
 	    }
@@ -67,19 +65,10 @@ public class SignalingDataDTO {
 	        this.candidate = candidate;
 	    }
 
-		public String getRole() {
-			return role;
-		}
-
-		public void setRole(String role) {
-			this.role = role;
-		}
-
 		@Override
 		public String toString() {
 			return "SignalingDataDTO [type=" + type + ", from=" + from + ", to=" + to + ", description=" + description
-					+ ", candidate=" + candidate + ", role=" + role + "]";
+					+ ", candidate=" + candidate + "]";
 		}
 
-	    
 }

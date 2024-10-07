@@ -1,4 +1,4 @@
-package com.rakesh.peer_interview.model;
+package com.rakesh.peer_interview.entity;
 
 import java.util.Collection;
 import java.util.List;
@@ -11,10 +11,17 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 
+@AllArgsConstructor
+@NoArgsConstructor
+@ToString
 @Entity
-@Table(name = "users")
+@Table(name = "user")
 public class User implements UserDetails {
 	
 	private static final long serialVersionUID = 1L;
@@ -24,7 +31,7 @@ public class User implements UserDetails {
     @Column(name = "user_id")
     private Long id;
 	
-	@Column(name = "username", unique = true, length = 200)
+	@Column(name = "username", unique = true, length = 50)
     private String username;
 
     @Column(name = "password", length = 500)
@@ -33,15 +40,22 @@ public class User implements UserDetails {
     @Column(name = "enabled")
     private Boolean enabled;
     
+    @Column(name = "first_name", length = 40)
+    private String firstName;
     
-	public User() {}
-
-	public User(Long id, String username, String password, Boolean enabled) {
-		this.id = id;
-		this.username = username;
-		this.password = password;
-		this.enabled = enabled;
-	}
+    @Column(name = "last_name", length = 40)
+    private String lastName;
+    
+    @OneToMany
+    private List<FavouritePeer> favouritePeers;
+    
+    public List<FavouritePeer> getFavouritePeers(){
+    	return favouritePeers;
+    }
+    
+    public void setFavouritePeers(List<FavouritePeer> favouritePeers) {
+    	this.favouritePeers = favouritePeers;
+    }
 	
 	public Long getId() {
 		return id;
@@ -65,6 +79,22 @@ public class User implements UserDetails {
 
 	public void setEnabled(Boolean enabled) {
 		this.enabled = enabled;
+	}
+	
+	public String getFirstName() {
+		return firstName;
+	}
+
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
+	}
+
+	public String getLastName() {
+		return lastName;
+	}
+
+	public void setLastName(String lastName) {
+		this.lastName = lastName;
 	}
 	
 	@Override
@@ -96,10 +126,4 @@ public class User implements UserDetails {
 	public Collection<? extends GrantedAuthority> getAuthorities() {
 		return List.of();
 	}
-	
-	@Override
-	public String toString() {
-		return "User [username=" + username + ", password=" + password + ", enabled=" + enabled + "]";
-	}
-
 }

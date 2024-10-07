@@ -14,11 +14,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.rakesh.peer_interview.model.User;
+import com.rakesh.peer_interview.entity.User;
 import com.rakesh.peer_interview.security.dto.LoginRequestDTO;
 import com.rakesh.peer_interview.security.dto.LoginResponseDTO;
 import com.rakesh.peer_interview.security.dto.RegisterUserRequestDTO;
 import com.rakesh.peer_interview.security.dto.RegisterUserResponseDTO;
+import com.rakesh.peer_interview.security.dto.UserDTO;
 
 @RestController
 @RequestMapping("/api/v1/auth")
@@ -44,11 +45,19 @@ public class AuthenticationController {
 		
 		String jwtToken = jwtService.buildJwtToken(user.getUsername());
 		
-		LoginResponseDTO loginResponse = new LoginResponseDTO();
-		loginResponse.setToken(jwtToken);
-		loginResponse.setTokenType("Bearer");
-		loginResponse.setExpiresMs(jwtService.getExpiresInMs());
-		loginResponse.setIssuedAt(new Date());
+		UserDTO userDTO = new UserDTO();
+		userDTO.setFirstName(user.getFirstName());
+		userDTO.setLastName(user.getLastName());
+		userDTO.setUsername(user.getUsername());
+		
+		LoginResponseDTO loginResponse = LoginResponseDTO
+											.builder()
+											.token(jwtToken)
+											.tokenType("Bearer")
+											.expiresMs(jwtService.getExpiresInMs())
+											.issuedAt(new Date())
+											.userDTO(userDTO)
+											.build();
 		
 		return new ResponseEntity<LoginResponseDTO>(loginResponse, HttpStatus.OK);
 	}
