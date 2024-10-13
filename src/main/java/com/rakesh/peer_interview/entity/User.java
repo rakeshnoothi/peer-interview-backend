@@ -11,7 +11,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
@@ -46,7 +46,7 @@ public class User implements UserDetails {
     @Column(name = "last_name", length = 40)
     private String lastName;
     
-    @OneToMany
+    @ManyToMany
     private List<FavouritePeer> favouritePeers;
     
     public List<FavouritePeer> getFavouritePeers(){

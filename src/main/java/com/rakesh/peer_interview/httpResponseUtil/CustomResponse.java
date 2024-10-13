@@ -2,8 +2,6 @@ package com.rakesh.peer_interview.httpResponseUtil;
 
 import java.time.LocalDateTime;
 
-import org.springframework.http.HttpStatus;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -15,14 +13,14 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class SuccessResponse {
-	private HttpStatus status;
+public class CustomResponse {
+	private int status;
 	private String message;
 	private LocalDateTime dateTime;
 	private Object data;
 	
-	public static SuccessResponse getResponse(HttpStatus status, String message, Object data) {
-		return SuccessResponse.builder()
+	public static CustomResponse getResponse(int status, String message, Object data) {
+		return CustomResponse.builder()
 				.status(status)
 				.message(message)
 				.dateTime(LocalDateTime.now())
