@@ -1,9 +1,7 @@
 package com.rakesh.peer_interview.webSocket;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
@@ -16,8 +14,6 @@ import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.messaging.support.ChannelInterceptor;
 import org.springframework.messaging.support.MessageHeaderAccessor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -32,6 +28,9 @@ import com.rakesh.peer_interview.security.JwtService;
 @Order(Ordered.HIGHEST_PRECEDENCE + 99)
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 	
+	@Value("${allowedOrigin}")
+	private String allowedOrigin;
+	
 	@Autowired
 	private JwtService jwtService;
 	
@@ -41,8 +40,8 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 	@Override
 	public void registerStompEndpoints(StompEndpointRegistry registry) {
 		// hit this end-point for web sockets handshake.
-		registry.addEndpoint("/ws")
-				.setAllowedOrigins("http://localhost:5173");
+		registry.addEndpoint("/api/v1/ws")
+				.setAllowedOrigins("*");
 		
 	}
 
@@ -50,7 +49,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 	public void configureMessageBroker(MessageBrokerRegistry config) {
 		config.setApplicationDestinationPrefixes("/app"); 
 		config.enableSimpleBroker("/topic", "/queue"); 
-//		config.setUserDestinationPrefix("/user");
+		config.setUserDestinationPrefix("/user");
 	}
 	
 	@Override
@@ -58,23 +57,27 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         registration.interceptors(new ChannelInterceptor() {
         	@Override
         	public Message<?> preSend(Message<?> message, MessageChannel channel) {
-        		System.out.println("Websocket channel interceptor ran");
         		StompHeaderAccessor accessor = MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
         		if (StompCommand.CONNECT.equals(accessor.getCommand())) {
+        			System.out.println("Websocket channel interceptor ran");
         			String authorizationHeader = accessor.getFirstNativeHeader("Authorization");
-        			System.out.println("Headers from stomp: " + authorizationHeader);
-        			String token = authorizationHeader.substring(7);
-        			System.out.println("Extracted token: " + token);
         			
-        			String username = jwtService.getUsernameFromToken(token);
-        			UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-        			
-        			List<GrantedAuthority> authorities = new ArrayList<>();
-        			authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
-        			
-        			UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(userDetails, null, authorities);
-        			SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
-        			accessor.setUser(usernamePasswordAuthenticationToken);
+        				if(authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+        					String token = authorizationHeader.substring(7);
+                			
+                			String username = jwtService.getUsernameFromToken(token);
+                			UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+                			
+                			boolean isTokenValid = jwtService.isTokenValid(token, userDetails);
+                			System.out.println("Is token valid: " + isTokenValid);
+                			
+                			if(isTokenValid) {
+                				System.out.println("The Provided token is valid");
+                				UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                    			SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
+                    			accessor.setUser(usernamePasswordAuthenticationToken);
+                			}
+        				}
         		}
 
         		return message;
